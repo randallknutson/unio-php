@@ -251,7 +251,7 @@ class Unio {
       $normPath = $this->normalizeUri($candidate->path);
 
       // check for a match in the resource name or path
-      $nameMatch = preg_match($normName, $resource) || preg_match($normName, $normPath);
+      $nameMatch = preg_match($normName, $resource) || preg_match($normPath, $resource);
 
       // check that the verbs allowed with this resource match `verb`
       $verbMatch = in_array($verb, $candidate->methods);
