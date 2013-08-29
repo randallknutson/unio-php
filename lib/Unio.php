@@ -112,14 +112,14 @@ class Unio {
   }
 
   /**
-   * undocumented function
+   * Select which spec to use.
    *
    * @param string $spec_name
    * @return object
    **/
   public function useSpec ($spec_name) {
     if (!isset($this->specs[$spec_name])) {
-      throw new \Exception("Spec not found", 1);
+      throw new \Exception("Cannot use `" . $spec_name . "`. Call unio.spec() to add this spec before calling .use().", 1);
     }
     $this->using_spec = $this->specs[$spec_name];
     return $this;
