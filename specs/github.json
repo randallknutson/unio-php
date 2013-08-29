@@ -1,16 +1,46 @@
 {
     "name": "github",
     "api_root": "https://api.github.com",
-    "resources": {
-        "/user": {
-            "methods": [ "get" ],
+    "resources": [
+        {
+            "path": "authorizations",
+            "methods": [ "post", "get" ],
             "params": [
                 {
-                    "access_token": "required"
+                    "scopes": "optional"
+                },
+                {
+                    "note": "optional"
+                },
+                {
+                    "note_uri": "optional"
+                },
+                {
+                    "client_id": "optional"
+                },
+                {
+                    "client_secret": "optional"
                 }
             ]
         },
-        "/users": {
+        {
+            "path": "access_token",
+            "methods": [ "get" ],
+            "params": [
+                {
+                    "oauth_token": "required"
+                }
+            ]
+        },
+        {
+            "path": "user",
+            "methods": [ "get" ],
+            "params": [
+
+            ]
+        },
+        {
+            "path": "users",
             "methods": [ "get" ],
             "params": [
                 {
@@ -18,5 +48,5 @@
                 }
             ]
         }
-    }
+    ]
 }

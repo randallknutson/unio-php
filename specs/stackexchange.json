@@ -1,0 +1,36 @@
+{
+    "name": "stackexchange",
+    "api_root": "https://api.stackexchange.com/2.1",
+    "resources": [
+        {
+            "path": "answers",
+            "methods": [ "get" ],
+            "params": [
+                {
+                    "site": "required"
+                },
+                {
+                    "order": "optional"
+                },
+                {
+                    "sort": "optional"
+                }
+            ]
+        },
+        {
+            "path": "badges",
+            "methods": [ "get" ],
+            "params": [
+                {
+                    "site": "required"
+                },
+                {
+                    "order": "optional"
+                },
+                {
+                    "sort": "optional"
+                }
+            ]
+        }
+    ]
+}

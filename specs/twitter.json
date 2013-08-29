@@ -1,32 +1,117 @@
 {
     "name": "twitter",
     "api_root": "https://api.twitter.com/1.1",
-    "resources": {
-        "/statuses/update.json": {
+    "resources": [
+        {
+            "name": "account/settings",
+            "path": "account/settings.json",
+            "methods": [ "get" ],
+            "params": {
+                    "oauth": "required"
+            }
+        },
+        {
+            "name": "followers/ids",
+            "path": "followers/ids.json",
+            "methods": [ "get" ],
+            "params": {
+                "screen_name": "optional",
+                "oauth": "required"
+            }
+        },
+        {
+            "name": "statuses/update",
+            "path": "statuses/update.json",
             "methods": [ "post" ],
-            "params": [
-                {
-                    "status": "required"
-                },
-                {
-                    "in_reply_to_status_id": "optional"
-                },
-                {
-                    "lat": "optional"
-                },
-                {
-                    "long": "optional"
-                },
-                {
-                    "place_id": "optional"
-                },
-                {
-                    "display_coordinates": "optional"
-                },
-                {
+            "params": {
+                    "status": "required",
+                    "in_reply_to_status_id": "optional",
+                    "lat": "optional",
+                    "long": "optional",
+                    "place_id": "optional",
+                    "display_coordinates": "optional",
                     "trim_user": "optional"
-                }
-            ]
+            }
+        },
+        {
+            "name": "search/tweets",
+            "path": "search/tweets.json",
+            "methods": [ "get" ],
+            "params": {
+                    "q": "required",
+                    "callback": "optional",
+                    "geocode": "optional",
+                    "lang": "optional",
+                    "locale": "optional",
+                    "page": "optional",
+                    "result_type": "optional"
+            }
+        },
+        {
+            "name": "statuses/home_timeline",
+            "path": "statuses/home_timeline.json",
+            "methods": [ "get" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/mentions_timeline",
+            "path": "statuses/mentions_timeline.json",
+            "methods": [ "get" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/update",
+            "path": "statuses/update.json",
+            "methods": [ "post" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/user_timeline",
+            "path": "statuses/user_timeline.json",
+            "methods": [ "get" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/retweets_of_me",
+            "path": "statuses/retweets_of_me.json",
+            "methods": [ "get" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/destroy/:id",
+            "path": "statuses/destroy/:id.json",
+            "methods": [ "post" ],
+            "params": {
+                "id": "required"
+            }
+        },
+        {
+            "name": "statuses/retweet/:id",
+            "path": "statuses/retweet/:id.json",
+            "methods": [ "post" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/retweets/:id",
+            "path": "statuses/retweets/:id.json",
+            "methods": [ "get" ],
+            "params": {}
+        },
+        {
+            "name": "statuses/show/:id",
+            "path": "statuses/show/:id.json",
+            "methods": [ "get" ],
+            "params": {
+                "id": "required"
+            }
+        },
+        {
+            "name": "geo/id/:place_id",
+            "path": "geo/id/:place_id.json",
+            "methods": [ "get" ],
+            "params": {
+                "place_id": "required"
+            }
         }
-    }
+    ]
 }

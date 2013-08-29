@@ -1,28 +1,99 @@
 {
     "name": "fb",
     "api_root": "https://graph.facebook.com",
-    "resources": {
-        "/:id": {
+    "resources": [
+        {
+            "path": "oauth/access_token",
             "methods": [ "get" ],
-            "params": [
-                {
-                    "q": "optional"
-                },
-                {
-                    "access_token": "required"
-                }
-            ]
+            "params": {
+                "client_id": "required",
+                "client_secret": "required",
+                "grant_type": "required"
+            }
         },
-        "/me": {
+        {
+            "path": "search",
             "methods": [ "get" ],
-            "params": [
-                {
-                    "fields": "optional"
-                },
-                {
-                    "access_token": "required"
-                }
-            ]
+            "params": {
+                "access_token": "required",
+                "q": "optional",
+                "type": "optional",
+                "center": "optional",
+                "distance": "optional",
+                "fields": "optional"
+            }
+        },
+        {
+            "path": ":id",
+            "methods": [ "get" ],
+            "params": {
+                "access_token": "required",
+                "id": "required",
+                "fields": "optional"
+            }
+        },
+        {
+            "path": ":id/feed",
+            "methods": [ "post" ],
+            "params": {
+                "access_token": "required",
+                "id": "required",
+                "message": "required",
+                "privacy": "optional",
+                "message": "optional",
+                "picture": "optional",
+                "link": "optional",
+                "name": "optional",
+                "caption": "optional",
+                "description": "optional",
+                "source": "optional",
+                "place": "optional",
+                "tags": "optional"
+            }
+        },
+        {
+            "path": ":id/likes",
+            "methods": [ "post" ],
+            "params": {
+                "access_token": "required"
+            }
+        },
+        {
+            "path": ":id/comments",
+            "methods": [ "post" ],
+            "params": {
+                "access_token": "required",
+                "message": "required"
+            }
+        },
+        {
+            "path": ":id/checkins",
+            "methods": [ "post" ],
+            "params": {
+                "access_token": "required",
+                "place": "required",
+                "coordinates": "optional",
+                "message": "optional",
+                "tags": "optional"
+            }
+        },
+        {
+            "path": ":id/picture",
+            "methods": [ "get" ],
+            "params": {
+                "id": "required",
+                "type": "optional",
+                "width": "optional",
+                "height": "optional",
+                "redirect": "optional"
+            }
+        },
+        {
+            "path": "fql",
+            "methods": [ "get" ],
+            "params": {
+               "q": "optional"
+            }
         }
-    }
+    ]
 }
