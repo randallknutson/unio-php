@@ -51,12 +51,18 @@ class Unio {
   private $using_spec;
 
   /**
-   * undocumented class variable
+   * Auth settings
    *
-   * @var string
+   * @var array
    **/
-  private $auth;
+  private $auth = FALSE;
 
+  /**
+   * Oauth settings
+   *
+   * @var array
+   */
+  private $oauth = FALSE;
 
   /**
    * Constructor function. Pass in the directory of the specs.
@@ -108,6 +114,39 @@ class Unio {
       throw new \Exception('spec with this name already exists.', 1);
     }
     $this->specs[$spec->name] = $spec;
+
+    return $this;
+  }
+
+  /**
+   * Set basic authentication for requests
+   *
+   * @param array $auth = array(
+   *   'user' => '***',
+   *   'pass' => '***'
+   *  );
+   * @return object
+   */
+  public function setAuth ($auth) {
+    $this->auth = $auth;
+
+    return $this;
+  }
+
+  /**
+   * Set basic authentication for requests
+
+   * @param array $oauth = array(
+   *    'consumer_key'  => '***',
+   *    'consumer_secret' => '***',
+   *    'token'       => '***',
+   *    'token_secret'  => '***'
+   *   );
+   * @return object
+   */
+  public function setOauth ($oauth) {
+    $this->oauth = $oauth;
+
     return $this;
   }
 
@@ -126,7 +165,7 @@ class Unio {
   }
 
   /**
-   * undocumented function
+   * Send a request to the REST API. This is called from __call()
    *
    * @param string $verb
    * @param string $resource
@@ -134,18 +173,107 @@ class Unio {
    * @param callable $callback
    * @return object
    **/
-  private function request ($verb, $resource, $params, $callback = null) {
+  private function request ($verb, $resource, $params, $callback = FALSE) {
+    $specResource = $this->findMatchingResource($verb, $resource);
+
+    if (!$specResource) {
+      throw new \Exception(ucfirst($verb) . ' ' . $resource . " not supported for API `" . $this->usingSpec->name . "`. Make sure the spec is correct, or `.use()` the correct API.", 1);
+    }
+
+    foreach($specResource->params as $keyName => $required) {
+      if ($required == 'required' && !isset($params[$keyName])) {
+        throw new \Exception("Invalid request: params object must have `" . $keyName . "`. It is listed as a required parameter in the spec.", 1);
+      }
+    }
+
+    // if /:params are used in the resource path, populate them
+    $matches = array();
+    if (preg_match_all('/\/:(\w+)/', $resource, $matches)) {
+      foreach($matches as $paramName) {
+        if (!isset($params[$paramName])) {
+          throw new \Exception('Params object is missing a required parameter from url path: ' . $paramName . '.', 1);
+        }
+        $resource = str_replace('/:' . $paramName, $params[$paramName], $resource);
+        unset($params[$paramName]);
+      }
+    }
+
     $client = new Client($this->using_spec->api_root);
-    if ($verb === 'get') {
-      $request = $client->get($resource . '?' . http_build_query($params));
-    } else {
+
+    // Check for auth params
+    if ($this->auth) {
+      $client->setAuth($this->auth['user'], $this->auth['pass']);
+    }
+
+    // Check for Oauth Params
+    if ($this->oauth) {
+      $client->addSubscriber(new Guzzle\Plugin\Oauth\OauthPlugin($this->oauth));
+    }
+
+    if (in_array($verb, array('post', 'put', 'patch'))) {
       $request = $client->$verb($resource, null, $params);
     }
+    elseif ($verb == 'get') {
+      $request = $client->$verb($resource . '?' . http_build_query($params));
+    }
+    elseif ($verb == 'delete') {
+      $request = $client->$verb($resource);
+    }
+    else { // Just in case.
+      throw new \Exception('Trying to call an invalid verb `' . $verb . '`', 1);
+    }
+
+    $response = $request->send();
     if ($callback) {
-      $callback($request->send()->json());
+      $callback($response->json());
     }
     else {
-      return $request->send()->json();
+      return $response->json();
     }
+  }
+
+  /**
+   * Find the first matching API resource for `verb` and `resource`
+   * from the spec we are currently using.
+   *
+   * @param  {String} verb       HTTP verb; eg. 'get', 'post'.
+   * @param  {String} resource   user's requested resource.
+   * @return {Object}            matching resource object from the spec.
+   */
+  function findMatchingResource($verb, $resource) {
+    $specResource = null;
+    $resourceCandidates = $this->usingSpec->resources;
+
+    // find the first matching resource in the spec, by
+    // checking the name and then the path of each resource in the spec
+    foreach($resourceCandidates as $index => $candidate) {
+      $normName = $this->normalizeUri($candidate->name);
+      $normPath = $this->normalizeUri($candidate->path);
+
+      // check for a match in the resource name or path
+      $nameMatch = preg_match($normName, $resource) || preg_match($normName, $normPath);
+
+      // check that the verbs allowed with this resource match `verb`
+      $verbMatch = in_array($verb, $candidate->methods);
+
+      if ($nameMatch && $verbMatch) {
+        return $resourceCandidates[$index];
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Normalize `uri` string to its corresponding regex string.
+   * Used for matching unio requests to the appropriate resource.
+   *
+   * @param  {String} uri
+   * @return {String}
+   */
+  function normalizeUri($uri) {
+    // normalize :params
+    // string forward slash -> regex match for forward slash
+    $normUri = preg_replace(array('/:w+/g', '/\//g'), array(':w+', '\\/'), $uri);
+    return '^' . $normUri . '$';
   }
 }
