@@ -137,7 +137,12 @@ class Unio {
     } else {
       $request = $client->$verb($resource, null, $params);
     }
-    $callback($request->send()->json());
+    if ($callback) {
+      $callback($request->send()->json());
+    }
+    else {
+      return $request->send()->json();
+    }
   }
 
 }
