@@ -27,7 +27,7 @@ class Unio {
    *
    * @var array
    **/
-  private $verbs = ['get', 'post', 'put', 'delete'];
+  private $verbs = ['get', 'patch', 'post', 'put', 'delete'];
 
   /**
    * Array of available specs
