@@ -59,7 +59,7 @@ class Unio {
 
 
   /**
-   * undocumented function
+   * Constructor function. Pass in the directory of the specs.
    *
    * @param string $spec_dir
    * @return void
@@ -76,7 +76,7 @@ class Unio {
   }
 
   /**
-   * undocumented function
+   * Generic call function. This will map to the HTTP verbs
    *
    * @param string $name
    * @param array $args
