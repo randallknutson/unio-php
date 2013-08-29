@@ -98,12 +98,16 @@ class Unio {
   }
 
   /**
-   * undocumented function
+   * Add a spec to this object.
    *
    * @param object $spec
    * @return object
    **/
   public function addSpec ($spec) {
+    if ($this->specs[$spec->name]) {
+      throw new \Exception('spec with this name already exists.', 1);
+    }
+    $this->specs[$spec->name] = $spec;
     return $this;
   }
 
@@ -144,5 +148,4 @@ class Unio {
       return $request->send()->json();
     }
   }
-
 }
